@@ -1,31 +1,33 @@
 <script>
-  import { getContext, onMount } from 'svelte';
-  import { SLIDE_GROUP } from '../SlideGroup/SlideGroup.svelte';
-  import { ITEM_GROUP } from '../ItemGroup/ItemGroup.svelte';
-  import { TABS } from './Tabs.svelte';
-  import Class from '../../internal/Class';
-  import Ripple from '../../actions/Ripple';
+  import { getContext, onMount } from "svelte";
+  import Ripple from "../../actions/Ripple";
+  import Class from "../../internal/Class";
+  import { ITEM_GROUP } from "../ItemGroup/ItemGroup.svelte";
+  import { SLIDE_GROUP } from "../SlideGroup/SlideGroup.svelte";
+  import { TABS } from "./Tabs.svelte";
 
   let tab;
   const click = getContext(SLIDE_GROUP);
   const ITEM = getContext(ITEM_GROUP);
   const { ripple, registerTab } = getContext(TABS);
 
-  let klass = '';
+  let klass = "";
   export { klass as class };
   export let value = ITEM.index();
   export let activeClass = ITEM.activeClass;
   export let disabled = null;
+  export let gotoRoute;
 
   let active;
   ITEM.register((values) => {
     active = values.includes(value);
   });
 
-  function selectTab({ target }) {
+  function selectTab({ target }, gotoRoute) {
     if (!disabled) {
       click(target);
       ITEM.select(value);
+      gotoRoute && gotoRoute();
     }
   }
 
@@ -46,7 +48,7 @@
   class:disabled
   class:active
   use:Class={[active && activeClass]}
-  on:click={selectTab}
+  on:click={(e) => selectTab(e, gotoRoute)}
   use:Ripple={ripple}>
   <slot />
 </button>
